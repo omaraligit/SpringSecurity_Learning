@@ -72,8 +72,8 @@ class myAuthenticationProvider implements AuthenticationProvider{
 
 @Controller
 class BasicController {
-	@GetMapping(value = "/home")
+	@GetMapping(name="home", value = "/home")
 	public String home(){
-		return "hello app";
+		return "home";
 	}
 }
