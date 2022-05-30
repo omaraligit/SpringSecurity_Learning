@@ -39,7 +39,6 @@ class MyWebSecurityConfig extends WebSecurityConfigurerAdapter {
 		// using our oun defined authentication Provider
 		// auth.authenticationProvider(new myAuthenticationProvider());
 		// TODO add a proper Authentication Manager
-
 		 // this way we have to respect Spring boot and all its requirements
 		List<GrantedAuthority> myAuthorities = new ArrayList<>();
 		myAuthorities.add(new SimpleGrantedAuthority("user"));
@@ -50,8 +49,7 @@ class MyWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-
-		http.authorizeRequests().anyRequest().authenticated().and().formLogin();
+		http.authorizeRequests().anyRequest().authenticated().and().formLogin().and().httpBasic();
 	}
 }
 
