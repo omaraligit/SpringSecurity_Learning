@@ -12,8 +12,14 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.ArrayList;
@@ -31,14 +37,15 @@ class MyWebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		// using our oun defined authentication Provider
-		auth.authenticationProvider(new myAuthenticationProvider());
+		// auth.authenticationProvider(new myAuthenticationProvider());
 		// TODO add a proper Authentication Manager
-		/**
-		 * this way we have to respect Spring boot and all its requirements
-		 * auth.userDetailsService(
-		 * add our own UserDetailsManger impl here
-		 * )
-		 */
+
+		 // this way we have to respect Spring boot and all its requirements
+		List<GrantedAuthority> myAuthorities = new ArrayList<>();
+		myAuthorities.add(new SimpleGrantedAuthority("user"));
+		InMemoryUserDetailsManager inMemoryUserDetailsManager = new InMemoryUserDetailsManager();
+		inMemoryUserDetailsManager.createUser(new User("omar","12345",myAuthorities));
+		auth.userDetailsService(inMemoryUserDetailsManager).passwordEncoder(NoOpPasswordEncoder.getInstance());
 	}
 
 	@Override
@@ -73,7 +80,8 @@ class myAuthenticationProvider implements AuthenticationProvider{
 @Controller
 class BasicController {
 	@GetMapping(name="home", value = "/home")
-	public String home(){
+	public String home(Model model){
+		model.addAttribute("username", SecurityContextHolder.getContext().getAuthentication().getName());
 		return "home";
 	}
 }
